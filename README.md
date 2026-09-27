@@ -195,7 +195,7 @@ En producción las variables `PAYMENT_*` se leen desde AWS SSM Parameter Store.
 | `transactions` | `id`, `customer_id`, `product_id`, `quantity`, `status`, `total_amount_in_cents`, `gateway_transaction_id`, `gateway_reference` | FK → customers, products |
 | `deliveries` | `id`, `transaction_id`, `customer_id`, `product_id`, `address`, `city`, `status` | FK → transactions, customers, products |
 
-**Estados de transacción**: `CREATED` → `APPROVED` / `DECLINED` / `ERROR` / `PENDING`
+**Estados de transacción**: `PENDING` → `APPROVED` / `DECLINED` / `ERROR`
 
 **Constraint único**: `gateway_reference` en transactions (evita duplicados de cobro)
 
@@ -205,7 +205,7 @@ Herramienta: **Vitest** (API 100% compatible con Jest)
 
 ```
 Test Files  6 passed (6)
-Tests       39 passed (39)
+Tests       40 passed (40)
 ```
 
 ### Cobertura
