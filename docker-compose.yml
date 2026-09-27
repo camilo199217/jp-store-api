@@ -1,0 +1,54 @@
+# Docker Compose para desarrollo local — levanta el backend + PostgreSQL juntos.
+# El frontend corre por separado con su propio dev server (vite).
+# Uso volúmenes nombrados para que los datos de la DB persistan entre reinicios.
+
+services:
+
+  # ── Base de datos PostgreSQL ─────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: checkout_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASS:-postgres}
+      POSTGRES_DB: ${DB_NAME:-checkout_db}
+    ports:
+      # Expongo el puerto para poder conectarme con un cliente como TablePlus o DBeaver
+      - '${DB_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-checkout_db}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend NestJS ───────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: checkout_backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Sobrescribo el host de la DB para que apunte al servicio de Docker, no a localhost
+      DB_HOST: postgres
+    ports:
+      - '${PORT:-3000}:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/api/v1/products || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  # Volumen nombrado para persistencia de datos entre reinicios del contenedor
+  postgres_data:
