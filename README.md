@@ -8,7 +8,7 @@ Backend de la tienda jp-store. NestJS con arquitectura hexagonal, TypeORM y Post
 - **TypeORM** — ORM + migraciones
 - **PostgreSQL** — base de datos
 - **Wompi** — pasarela de pagos (sandbox)
-- **Swagger** — documentación de API (`/api/docs`)
+- **Swagger** — documentación de API (https://d1ooypu8bqmie2.cloudfront.net/api/docs)
 - **Vitest** — tests unitarios
 
 ## Arquitectura
@@ -47,12 +47,12 @@ src/
 |---|---|---|
 | GET | `/api/v1/products` | Listado paginado de productos |
 | GET | `/api/v1/products/:id` | Detalle de un producto |
-| POST | `/api/v1/customers` | Crear cliente |
-| POST | `/api/v1/transactions` | Procesar pago (crea cliente + tokeniza + cobra) |
+| POST | `/api/v1/customers` | Registrar cliente con datos de entrega |
+| POST | `/api/v1/transactions` | Procesar pago con tarjeta tokenizada |
 | GET | `/api/v1/transactions/:id` | Estado de una transacción |
 | GET | `/api/v1/deliveries/transaction/:transactionId` | Entrega asociada a una transacción |
 
-Documentación interactiva: https://d1ooypu8bqmie2.cloudfront.net/api/docs
+**Documentación interactiva (Swagger):** https://d1ooypu8bqmie2.cloudfront.net/api/docs
 
 ## Instalación local
 
@@ -135,8 +135,8 @@ docker push \
 
 # Forzar nuevo deploy
 aws ecs update-service \
-  --cluster jp-store-prod \
-  --service jp-store-backend \
+  --cluster jp-store-cluster \
+  --service jp-store-backend-service \
   --force-new-deployment \
   --region us-east-1
 ```
