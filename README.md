@@ -52,7 +52,7 @@ src/
 | GET | `/api/v1/transactions/:id` | Estado de una transacción |
 | GET | `/api/v1/deliveries/transaction/:transactionId` | Entrega asociada a una transacción |
 
-Documentación interactiva: `GET /api/docs`
+Documentación interactiva: https://d1ooypu8bqmie2.cloudfront.net/api/docs
 
 ## Instalación local
 
