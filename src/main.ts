@@ -66,12 +66,41 @@ async function bootstrap() {
   // ── Swagger ───────────────────────────────────────────────────────────────
   const config = new DocumentBuilder()
     .setTitle('Payment Checkout API')
-    .setDescription('API para el flujo de pago con tarjeta de crédito')
+    .setDescription(`
+## Flujo completo del checkout
+
+\`\`\`
+1. GET  /api/v1/products              → elegir producto (obtener productId)
+2. POST /api/v1/customers             → registrar cliente (obtener customerId)
+3. [Frontend] GET Wompi /merchants    → obtener acceptanceToken
+4. [Frontend] POST Wompi /tokens/cards → tokenizar tarjeta (obtener cardToken)
+5. POST /api/v1/transactions          → procesar pago
+6. GET  /api/v1/transactions/:id      → consultar resultado
+7. GET  /api/v1/deliveries/transaction/:id → ver entrega creada
+\`\`\`
+
+## Tarjetas de sandbox Wompi
+
+| Marca | Número | CVV | Resultado |
+|---|---|---|---|
+| Visa | 4242 4242 4242 4242 | cualquier 3 dígitos | APPROVED |
+| Visa | 4111 1111 1111 1111 | cualquier 3 dígitos | DECLINED |
+| Mastercard | 5254 1336 7443 8670 | cualquier 3 dígitos | APPROVED |
+| Mastercard | 5399 2420 7311 1197 | cualquier 3 dígitos | DECLINED |
+| Amex | 3782 822463 10005 | cualquier 4 dígitos | APPROVED |
+
+Vencimiento: cualquier fecha futura (ej. 12/30)
+
+## Entorno
+
+- Wompi Sandbox URL: \`https://api-sandbox.co.uat.wompi.dev/v1\`
+- Public key: \`pub_stagtest_g2u0HQd3ZMh05hsSgTS2lUV8t3s4mOt7\`
+    `)
     .setVersion('1.0')
-    .addTag('products', 'Productos y stock')
-    .addTag('customers', 'Clientes')
-    .addTag('transactions', 'Transacciones de pago')
-    .addTag('deliveries', 'Entregas')
+    .addTag('products', 'Catálogo de productos y stock')
+    .addTag('customers', 'Registro de clientes')
+    .addTag('transactions', 'Procesamiento de pagos con Wompi')
+    .addTag('deliveries', 'Entregas generadas tras pago aprobado')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

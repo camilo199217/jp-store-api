@@ -15,9 +15,33 @@ export class CustomersController {
 
   // Crea el cliente con sus datos de contacto y entrega durante el paso 2 del checkout
   @Post()
-  @ApiOperation({ summary: 'Registrar cliente para el checkout' })
-  @ApiResponse({ status: 201, description: 'Cliente creado exitosamente' })
-  @ApiResponse({ status: 400, description: ErrorCode.VALIDATION_ERROR })
+  @ApiOperation({
+    summary: 'Registrar cliente para el checkout',
+    description: 'Paso 1 del flujo: crea el cliente con datos de contacto y entrega. El `id` retornado se usa como `customerId` en POST /api/v1/transactions.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Cliente creado exitosamente',
+    schema: {
+      example: {
+        success: true,
+        data: {
+          id: 'cust-uuid-1234',
+          name: 'Juan Palacio',
+          email: 'juan@email.com',
+          phone: '3001234567',
+          address: 'Calle 123 #45-67',
+          city: 'Bogotá',
+        },
+        meta: { timestamp: '2026-01-01T00:00:00.000Z' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Datos de entrada inválidos',
+    schema: { example: { code: ErrorCode.VALIDATION_ERROR } },
+  })
   async create(@Body() dto: CreateCustomerDto) {
     this.logger.log(`POST /customers email=${dto.email}`);
 
